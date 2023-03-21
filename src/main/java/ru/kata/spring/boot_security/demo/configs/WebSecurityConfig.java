@@ -1,32 +1,33 @@
 package ru.kata.spring.boot_security.demo.configs;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import ru.kata.spring.boot_security.demo.service.UserService;
+import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
+import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
-import javax.sql.DataSource;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletContext;
+import java.util.EnumSet;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final SuccessUserHandler successUserHandler;
-    private final UserService userService;
+    private final UserDetailServiceImpl userDetailServiceImpl;
 
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserService userService) {
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserDetailServiceImpl userDetailServiceImpl) {
         this.successUserHandler = successUserHandler;
-        this.userService = userService;
+        this.userDetailServiceImpl = userDetailServiceImpl;
     }
 
     @Override
@@ -37,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/", "/index").permitAll()//доступ для всех
                 .antMatchers("/admin/**")
                 .hasRole("ADMIN")
-                .antMatchers("/user")
+                .antMatchers("/user/**")
                 .hasAnyRole("ADMIN", "USER")
                 .and()//разделитель
 //                можно указать форму для авторизации, по умолчанию спринговая
@@ -57,11 +58,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setPasswordEncoder(passwordEncoder());
-        authenticationProvider.setUserDetailsService(userService);
+        authenticationProvider.setUserDetailsService(userDetailServiceImpl);
         return authenticationProvider;
     }
 }

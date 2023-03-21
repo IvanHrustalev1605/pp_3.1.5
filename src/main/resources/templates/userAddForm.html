@@ -24,7 +24,7 @@
     <div class="row">
         <nav class="navbar navbar-dark bg-dark">
             <div class="col-md-auto m-1">
-                <p class="navbar-brand" th:each="role : ${authUser.role}"
+                <p class="navbar-brand" th:each="role : ${authUser.getRole()}"
                    th:text="${authUser.email + ' whith roles: ' +
                role.getName().substring(5,role.getName().length()).toLowerCase()}">with roles</p>
             </div>
@@ -35,7 +35,7 @@
     </div>
     <div class="row" style="margin-top: 20px">
         <div class="col-2">
-            <h5 class="active-left-item mt-2"><a style="text-decoration: none" th:href="@{/admin/users}">Admin</a></h5>
+            <h5 class="active-left-item mt-2"><a style="text-decoration: none" th:href="@{/users}">Admin</a></h5>
             <h5 class="active-left-item"><a style="text-decoration: none" th:href="@{/user}">User</a></h5>
         </div>
         <div class="col-8">
@@ -45,7 +45,7 @@
             <hr>
             <div style="display: flex">
                 <div style="margin-right: 15px ">
-                    <p class="active-left-item mt-2"><a style="text-decoration: none" th:href="@{/admin/users}">User table</a></p>
+                    <p class="active-left-item mt-2"><a style="text-decoration: none" th:href="@{/addUser}">User table</a></p>
                 </div>
                 <div>
                     <p style="color: gray" class="active-left-item mt-2">New user</p>
@@ -57,7 +57,7 @@
             </div>
             <div class="container-userForm">
                 <div class="block-userForm ">
-            <form th:method="POST" th:action="@{/admin}" th:object="${user}">
+            <form th:method="POST" th:action="@{/addUser}" th:object="${user}">
                 <div class="row text-center">
                     <p for="username">Username: </p>
                     <input type="text" th:field="*{username}" id="username">
@@ -75,7 +75,7 @@
                 </div>
                 <div class="row text-center">
                     <p>Role: </p>
-                    <select class="form-control" th:field="*{role}"  id="role" multiple="multiple">
+                    <select class="form-control" th:field="*{role}" name="roles"  id="role" multiple="multiple" required="required">
                         <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name.substring(5,role.getName().length())}"></option>
                     </select>
                     <div style="color: red" th:if="${#fields.hasErrors('role')}" th:errors="*{role}">role error</div>

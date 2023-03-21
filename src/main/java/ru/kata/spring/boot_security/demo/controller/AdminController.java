@@ -5,81 +5,89 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import ru.kata.spring.boot_security.demo.model.Role;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.RoleServiceImpl;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
+
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.List;
 
-@Controller
+
+@Controller(value = "/admin")
 public class AdminController {
-
     private final UserService userService;
-    private final RoleServiceImpl roleServiceImpl;
+    private final RoleService roleService;
 
-    public AdminController(UserService userService, RoleServiceImpl roleServiceImpl) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleServiceImpl = roleServiceImpl;
+        this.roleService = roleService;
     }
-@GetMapping("/admin/users")
-public String findAll(ModelMap model, User user, Principal principal) {
-    model.addAttribute("users", userService.allUsers(user));
-    model.addAttribute("authUser", userService.findByUserName(principal.getName()));
-    return "users";
+
+    @GetMapping("/users")
+    public String findAll(ModelMap model, User user, Principal principal) {
+        model.addAttribute("users", userService.allUsers(user));
+        model.addAttribute("authUser", userService.findByUserName(principal.getName()));
+        return "users";
     }
-    @GetMapping("/admin/moreAboutUser/{id}")
+
+    @GetMapping("/moreAboutUser/{id}")
     public String getFullInformationAboutUser(@PathVariable("id") Long id,
                                               ModelMap model) {
             User user = userService.getUserById(id);
             if (user == null) {
                 return "users";
             }
-        model.addAttribute("user", user);
+            model.addAttribute("user", user);
             return "moreAboutUser";
     }
-    @GetMapping("/admin/users/addForm")
+
+    @GetMapping("/users/addForm")
     public String show(Model model, Principal principal) {
         model.addAttribute("user", new User());
-        List<Role> roles = roleServiceImpl.getAll();
-        model.addAttribute("roles", roles);
+        model.addAttribute("roles", roleService.getAll());
         model.addAttribute("authUser", userService.findByUserName(principal.getName()));
         return "userAddForm";
     }
 
-    @PostMapping("/admin")
+    @PostMapping("/addUser")
     public String addUser(@ModelAttribute("user")@Valid User user,
-                          BindingResult bindingResult) {
+                          BindingResult bindingResult,
+                          ModelMap model, Principal principal) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("roles", roleService.getAll());
+            model.addAttribute("authUser", userService.findByUserName(principal.getName()));
+            return "userAddForm";
+        }
+        if (userService.findByUserName(user.getUsername()) != null) {
+            bindingResult.addError(new FieldError("username", "username",
+                    String.format("User with name \"%s\" is already exist!", user.getUsername())));
+            model.addAttribute("roles", roleService.getAll());
+            model.addAttribute("authUser", userService.findByUserName(principal.getName()));
             return "userAddForm";
         }
         userService.create(user);
-        return "redirect:/admin/users";
+        return "redirect:/users";
     }
 
-    @GetMapping("/admin/{id}")
+    @DeleteMapping(value = "/del/{id}")
     public String deleteUser(@PathVariable("id") Long id) {
         userService.delete(id);
-        return "redirect:/admin/users";
+        return "redirect:/users";
     }
 
-    @GetMapping(value = "admin/user/edit/{id}")
+    @GetMapping(value = "user/edit/{id}")
     public String edit(ModelMap model, @ModelAttribute(value = "id") Long id,
                        Principal principal) {
-        List<Role> roles = roleServiceImpl.getAll();
         model.addAttribute("user", userService.getUserById(id));
-        model.addAttribute("roles", roles);
+        model.addAttribute("roles", roleService.getAll());
         model.addAttribute("authUser", userService.findByUserName(principal.getName()));
         return "userUpdateForm";
     }
 
-    @PostMapping(value = "admin/user/{id}")
+    @PutMapping(value = "user/update/{id}")
     public String updateUser(@ModelAttribute(value = "user")@Valid User user,
                              BindingResult bindingResult,
                              @PathVariable("id") Long id) {
@@ -88,6 +96,6 @@ public String findAll(ModelMap model, User user, Principal principal) {
             }
 
         userService.update(user, id);
-        return "redirect:/admin/users";
+        return "redirect:/users";
     }
 }
