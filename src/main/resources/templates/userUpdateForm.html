@@ -55,7 +55,7 @@
                 <p>Edit User</p>
             </div>
             <hr>
-            <div class="container-userForm">
+            <div class="container-userForm" >
                 <div class="block-userForm ">
                     <form th:method="put" th:action="@{/user/update/{id}(id=${user.getId()})}" th:object="${user}">
                         <div class="row text-center">

@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.configs;
 
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -23,11 +25,12 @@ import java.util.EnumSet;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final SuccessUserHandler successUserHandler;
-    private final UserDetailServiceImpl userDetailServiceImpl;
 
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserDetailServiceImpl userDetailServiceImpl) {
+    private UserServiceImpl userServiceImpl;
+
+
+    public WebSecurityConfig(SuccessUserHandler successUserHandler) {
         this.successUserHandler = successUserHandler;
-        this.userDetailServiceImpl = userDetailServiceImpl;
     }
 
     @Override
@@ -63,7 +66,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setPasswordEncoder(passwordEncoder());
-        authenticationProvider.setUserDetailsService(userDetailServiceImpl);
+        authenticationProvider.setUserDetailsService(userServiceImpl);
         return authenticationProvider;
+    }
+
+    @Autowired
+    public void setUserServiceImpl(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 }

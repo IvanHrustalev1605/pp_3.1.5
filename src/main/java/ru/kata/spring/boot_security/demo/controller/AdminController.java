@@ -89,13 +89,12 @@ public class AdminController {
 
     @PutMapping(value = "user/update/{id}")
     public String updateUser(@ModelAttribute(value = "user")@Valid User user,
-                             BindingResult bindingResult,
-                             @PathVariable("id") Long id) {
+                             BindingResult bindingResult) {
             if(bindingResult.hasErrors()) {
                 return "userUpdateForm";
             }
 
-        userService.update(user, id);
+        userService.update(user);
         return "redirect:/users";
     }
 }

@@ -9,6 +9,14 @@ import javax.persistence.*;
 @Entity
 @Table(name = "role")
 public class Role implements GrantedAuthority {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
+    private String name;
+
     public Role() {
     }
 
@@ -16,12 +24,6 @@ public class Role implements GrantedAuthority {
         this.id = id;
         this.name = name;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-
     public Long getId() {
         return id;
     }

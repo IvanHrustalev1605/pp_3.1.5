@@ -22,19 +22,4 @@ public class RoleServiceImpl implements RoleService {
        return roleRepository.findAll();
     }
 
-    @Override
-    public Role findById(long id) {
-        return roleRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public Collection<Role> findByIdRoles(List<Long> roles) {
-        Collection<Role> roleCollection = new HashSet<>();
-        for (int i = 0; i<= roles.size(); i++) {
-            roleCollection.add(findById(i));
-        }
-        return roleCollection;
-    }
-
-
 }
