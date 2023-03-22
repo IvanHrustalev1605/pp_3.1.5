@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Collection;
+import java.util.Set;
 
 
 @Entity
@@ -36,8 +37,8 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     @NotEmpty
-    private Collection<Role> role;
-    public User(Long id, String username, String password, String name, String lastName, Integer age, String email, Collection<Role> role) {
+    private Set<Role> role;
+    public User(Long id, String username, String password, String name, String lastName, Integer age, String email, Set<Role> role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -109,11 +110,11 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public Collection<Role> getRole() {
+    public Set<Role> getRole() {
         return role;
     }
 
-    public void setRole(Collection<Role> role) {
+    public void setRole(Set<Role> role) {
         this.role = role;
     }
 

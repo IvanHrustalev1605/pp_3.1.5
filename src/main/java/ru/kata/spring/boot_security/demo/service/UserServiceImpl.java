@@ -72,7 +72,6 @@ public class UserServiceImpl implements  UserService, UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
-        return new User(user.getId(),user.getUsername(),user.getPassword(),user.getName(),user.getLastName(),
-                user.getAge(), user.getEmail(),user.getRole());
+        return user;
     }
 }
