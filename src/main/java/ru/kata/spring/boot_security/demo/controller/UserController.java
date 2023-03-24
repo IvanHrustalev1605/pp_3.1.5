@@ -19,7 +19,7 @@ public class UserController {
 
     @GetMapping("/userProfile")
     public String authenticationUser(Principal principal, ModelMap model) {
-        model.addAttribute("user", userService.findByUserName(principal.getName()));
+        model.addAttribute("authUser", userService.findByUserName(principal.getName()));
         return "oneUser";
     }
 }

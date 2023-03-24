@@ -30,17 +30,20 @@ public class AdminController {
     public String findAll(ModelMap model, User user, Principal principal) {
         model.addAttribute("users", userService.allUsers(user));
         model.addAttribute("authUser", userService.findByUserName(principal.getName()));
+        model.addAttribute("roles", roleService.getAll());
         return "users";
     }
 
     @GetMapping("/moreAboutUser/{id}")
     public String getFullInformationAboutUser(@PathVariable("id") Long id,
-                                              ModelMap model) {
+                                              ModelMap model,
+                                              Principal principal) {
             User user = userService.getUserById(id);
             if (user == null) {
                 return "users";
             }
             model.addAttribute("user", user);
+            model.addAttribute("authUser", userService.findByUserName(principal.getName()));
             return "moreAboutUser";
     }
 
@@ -78,22 +81,8 @@ public class AdminController {
         return "redirect:/users";
     }
 
-    @GetMapping(value = "user/edit/{id}")
-    public String edit(ModelMap model, @ModelAttribute(value = "id") Long id,
-                       Principal principal) {
-        model.addAttribute("user", userService.getUserById(id));
-        model.addAttribute("roles", roleService.getAll());
-        model.addAttribute("authUser", userService.findByUserName(principal.getName()));
-        return "userUpdateForm";
-    }
-
     @PutMapping(value = "user/update/{id}")
-    public String updateUser(@ModelAttribute(value = "user")@Valid User user,
-                             BindingResult bindingResult) {
-            if(bindingResult.hasErrors()) {
-                return "userUpdateForm";
-            }
-
+    public String updateUser(@ModelAttribute(value = "user") User user) {
         userService.update(user);
         return "redirect:/users";
     }
