@@ -51,7 +51,7 @@ public class RestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @PutMapping(value = "/allUsers")
-    public ResponseEntity<User> updateUser(@ModelAttribute(value = "user") User user) {
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
         userServiceImpl.update(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }

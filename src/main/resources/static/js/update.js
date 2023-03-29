@@ -1,21 +1,18 @@
+var currentUser;
 async function updateUser(id) {
     $('#modalUpdateWindow').modal('show');
     let userById = await fetch(`/allUsers/${id}`);
     let modalBody = document.querySelector('#modalUpdateBody')
     let modalFooter = document.querySelector('#modalUpdateFooter');
     modalFooter.innerHTML = `<button  class="btn btn-info" id="updateButton">Update</button>`;
-    let roleSelect = document.querySelector('#rolesup');
     await userById.json()
         .then(user => {
+            currentUser = user;
             modalBody.innerHTML =
                 `<form id="deleteForm" class="form-group text-center">
               <div class="row text-center">
                 <p for="username">Username: </p>
                 <input type="text" value="${user.username}" id="usernameup">
-              </div>
-               <div class="row text-center">
-                <p for="username">Password: </p>
-                <input type="password" value="${user.password}" id="passwordup">
               </div>
               <div class="row text-center">
                 <p>Name: </p>
@@ -41,27 +38,45 @@ async function updateUser(id) {
             </form>`;
 
         })
-
-
-    let username = document.querySelector('#usernameup').value.trim();
-    let password = document.querySelector('#passwordup').value.trim();
-    let name = document.querySelector('#nameup').value.trim();
-    let lastName = document.querySelector('#lastNameup').value.trim();
-    let age = document.querySelector('#agedup').value.trim();
-    let email = document.querySelector('#emailup').value.trim();
-    let role = document.querySelector('#rolesup').value.trim();
-
-    let user = {
-        username: username,
-        password: password,
-        name: name,
-        role: role,
-        lastName: lastName,
-        age: age,
-        email: email
+        let roleSelect = document.querySelector('#rolesup');
+        const roleIds = currentUser.role.map(x => x.id)
+            setRoles.forEach(x => {
+                const opt = document.createElement('option');
+                opt.value = x.id;
+                opt.text = x.name.substring(5);
+                if(roleIds.includes(x.id)) {
+                    opt.selected = true
+                }
+                roleSelect.append(opt)
+            })
+    //
+    let checkedRoles = () => {
+        let array = []
+        let options = document.querySelector('#rolesup').options
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].selected) {
+                array.push({
+                    id: options[i].value,
+                    name: options[i].innerText
+                })
+            }
+        }
+        return array;
     }
-    console.log(user)
     $('#updateButton').on('click', async function () {
+        let username = document.querySelector('#usernameup').value.trim();
+        let name = document.querySelector('#nameup').value.trim();
+        let lastName = document.querySelector('#lastNameup').value.trim();
+        let age = document.querySelector('#agedup').value.trim();
+        let email = document.querySelector('#emailup').value.trim();
+        let user = {
+            username: username,
+            name: name,
+            role: checkedRoles(),
+            lastName: lastName,
+            age: age,
+            email: email
+        }
         let response = await fetch(`/allUsers`, {
             head: {
                 'Accept': 'application/json',

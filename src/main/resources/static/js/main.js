@@ -1,8 +1,3 @@
-let roleList = [
-    {id: 1, name: "ROLE_USER"},
-    {id: 2, name: "ROLE_ADMIN"},
-    {id: 3, name: "ROLE_MANAGER"}
-]
 $(async function () {
     await getAllUsers();
 });
@@ -80,6 +75,14 @@ async function getUserById(id) {
         table.innerHTML = temp;
     })
 }
+
+var setRoles;
+async function pechenka() {
+      fetch("/roles").then(res => res.json()).then(roles => {
+        setRoles = roles
+    });
+}
+
 async function getAllRoles() {
     let roleSelect = document.querySelector('#roles')
     let setRoles = await fetch("/roles");
@@ -97,11 +100,13 @@ function addUserForm() {
     $('#add-form').show();
 }
 $(document).ready(function () {
+    pechenka();
     getAllUsers();
     getAllRoles();
     title();
     $('#add-form').hide();
 });
+
 function loadModalWindow() {
     $('#modalDeleteWindow').modal('show');
 }

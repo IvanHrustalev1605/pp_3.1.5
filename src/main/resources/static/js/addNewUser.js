@@ -11,11 +11,16 @@ async function addUser() {
         let options = document.querySelector('#roles').options
         for (let i = 0; i < options.length; i++) {
             if (options[i].selected) {
-                array.push(roleList[i])
+                // array.push(roleList[i])
+                array.push({
+                    id: options[i].value,
+                    name: options[i].innerText
+                })
             }
         }
         return array;
     }
+
     let user = {
         username: username,
         password: password,
@@ -25,6 +30,7 @@ async function addUser() {
         age: age,
         email: email
     }
+    console.log(user.role)
         await fetch('/allUsers', {
             method: 'POST',
             headers: {
