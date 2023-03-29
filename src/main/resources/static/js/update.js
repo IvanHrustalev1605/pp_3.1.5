@@ -3,9 +3,9 @@ async function updateUser(id) {
     let userById = await fetch(`/allUsers/${id}`);
     let modalBody = document.querySelector('#modalUpdateBody')
     let modalFooter = document.querySelector('#modalUpdateFooter');
-    modalFooter.innerHTML = `<button  class="btn btn-info" id="updateButton">Delete</button>`;
+    modalFooter.innerHTML = `<button  class="btn btn-info" id="updateButton">Update</button>`;
     let roleSelect = document.querySelector('#rolesup');
-    userById.json()
+    await userById.json()
         .then(user => {
             modalBody.innerHTML =
                 `<form id="deleteForm" class="form-group text-center">
@@ -36,17 +36,13 @@ async function updateUser(id) {
                <div class="row text-center">
                   <p>Role: </p>
                   <select class="form-control" id="rolesup" required="required" multiple>
-                        <option value="${user.role.map(x => x.id)}">${user.role.map(x => x.name)}</option>
                   </select>
                 </div>
             </form>`;
+
         })
-    userById.json()
-        .then(user => {
-            user.role.forEach(role => {
-                roleSelect.innerHTML = `<option value="${role.id}">${role.name.substring(5)}</option>`
-            })
-        })
+
+
     let username = document.querySelector('#usernameup').value.trim();
     let password = document.querySelector('#passwordup').value.trim();
     let name = document.querySelector('#nameup').value.trim();
