@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script type="text/javascript" th:src="@{/js/main.js}" src="../static/js/main.js"></script>
+    <script type="text/javascript" th:src="@{/js/delete.js}" src="../static/js/delete.js"></script>
+    <script type="text/javascript" th:src="@{/js/getAuthUser.js}" src="../static/js/getAuthUser.js"></script>
+    <script type="text/javascript" th:src="@{/js/addNewUser.js}" src="../static/js/addNewUser.js"></script>
+    <script type="text/javascript" th:src="@{/js/update.js}" src="../static/js/update.js"></script>
+    <meta charset="UTF-8"/>
+    <title>Spring Security Example</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+<style>
+    .form-control {
+        max-width: 300px;
+        max-height: 40px;
+        font-size: 16px;
+        display: block;
+        margin-right: auto;
+        margin-left: auto;
+    }
+</style>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark" th:fragment="nav">
+    <div class="col-md-auto m-1">
+        <p class="text-white">
+            <b><span class="align-middle" id="auth-email"></span></b>
+            <span class="align-middle">with roles:</span>
+            <span class="align-middle" id="auth-roles"></span>
+        </p>
+    </div>
+    <div class="col-md-auto m-1">
+        <p class="navbar-brand "><a style="color: gray; text-decoration: none" th:href="@{/logout}">Logout</a></p>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row" style="margin-top: 20px">
+        <div class="col-2">
+            <h5 sec:authorize="hasRole('ROLE_ADMIN')" class="active-left-item mt-2"><a href="#" onclick="getAllUsers(); return false">Admin</a></h5>
+            <h5 class="active-left-item"><a href="#" style="text-decoration: none" onclick="getAuthUser(); return false">User</a></h5>
+        </div>
+        <div class="col-8">
+            <div class="mb-3">
+                <h2>Admin panel</h2>
+            </div>
+            <div style="display: flex" class="mt-1">
+                <div style="margin-right: 15px ">
+                    <p class="active-left-item mt-2"><a href="#"  onclick="getAllUsers()" style="text-decoration: none">Users table</a></p>
+                </div>
+                <div>
+                    <p class="active-left-item mt-2"><a href="#" style="text-decoration: none" onclick="addUserForm();return false">Add user</a></p>
+                </div>
+            </div>
+            <table id="allUsers" class="table">
+                <thead>
+                <tr>
+                    <th>UserId</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>LastName</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                    <th>More about user</th>
+                    <th>Role</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <table id="userById" class="table">
+                <thead>
+                <tr>
+                    <th>UserId</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>LastName</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <form id="add-form" class="form-control" style="display: none">
+                <div class="row text-center">
+                    <p for="username">Username: </p>
+                    <input type="text"  id="username">
+                </div>
+                <div class="row text-center">
+                    <p>Password: </p>
+                    <input type="password" id="password">
+                </div>
+                <div class="row text-center">
+                    <p>Name: </p>
+                    <input type="text" id="name">
+                </div>
+                <div class="row text-center">
+                    <p>Role: </p>
+                    <select class="form-control" id="roles" required="required" multiple>
+                    </select>
+                </div>
+                <div class="row text-center">
+                    <p>LastName: </p>
+                    <input type="text" id="lastName">
+                </div>
+                <div class="row text-center">
+                    <p>age: </p>
+                    <input type="number" id="age" min="0" max="100">
+                </div>
+                <div class="row text-center">
+                    <p>email: </p>
+                    <input type="email" id="email">
+                </div>
+                <div class="row text-center">
+                    <div class="col-sm-12 mt-2">
+                        <button class="btn btn-success" type="button" id="addUserButton" onclick="addUser()" >Add user</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal fade"  tabindex="-1" aria-labelledby="modalDelete" id="modalDeleteWindow" aria-hidden="true" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDelete">User for delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                </div>
+                <div class="modal-footer" id="modalFooter">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade"  tabindex="-1" aria-labelledby="modalDelete" id="modalUpdateWindow" aria-hidden="true" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalUpdate">User for delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body" id="modalUpdateBody">
+                </div>
+                <div class="modal-footer" id="modalUpdateFooter">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

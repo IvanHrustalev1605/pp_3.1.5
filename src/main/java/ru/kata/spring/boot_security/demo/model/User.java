@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 
@@ -16,7 +17,6 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @NotEmpty(message = "username must not be empty!")
     @Column(unique = true)
     private String username;
@@ -32,13 +32,12 @@ public class User implements UserDetails {
     @Email(message = "Incorrect type of email!")
     private String email;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    @NotEmpty
-    private Set<Role> role;
-    public User(Long id, String username, String password, String name, String lastName, Integer age, String email, Set<Role> role) {
+    private List<Role> role;
+    public User(Long id, String username, String password, String name, String lastName, Integer age, String email, List<Role> role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -110,11 +109,11 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public Set<Role> getRole() {
+    public List<Role> getRole() {
         return role;
     }
 
-    public void setRole(Set<Role> role) {
+    public void setRole(List<Role> role) {
         this.role = role;
     }
 

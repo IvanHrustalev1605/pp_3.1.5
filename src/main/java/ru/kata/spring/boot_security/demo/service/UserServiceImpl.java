@@ -22,6 +22,7 @@ public class UserServiceImpl implements  UserService, UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
+
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements  UserService, UserDetailsService {
     }
 
     @Override
-    public List<User> allUsers(User user) {
+    public List<User> allUsers() {
         return userRepository.findAll();
     }
 
