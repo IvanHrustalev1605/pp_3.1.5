@@ -3,7 +3,7 @@ async function getAuthUser() {
     $('#allUsers').hide();
     let temp = '';
     let table = document.querySelector('#userById tbody');
-    let result = await fetch("/user");
+    let result = await fetch("/userProfile");
     await result.json().then(autUser => {
         temp = `
             <tr>
@@ -14,12 +14,7 @@ async function getAuthUser() {
                     <td>${autUser.age}</td>
                     <td>${autUser.email}</td>
                     <td>${autUser.role.map(x => " " + x.name.substr(5))}</td>
-             </tr>
-                <button sec:authorize="hasRole('ROLE_ADMIN')"
-                        id="back-to-all-users"
-                        class="btn btn-info"
-                        type="button"
-                        onclick="getAllUsers()"  data-target="#allUsers" data-action="get">Back to all users</button>`;
+             </tr>`;
         table.innerHTML = temp;
     })
 }

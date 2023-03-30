@@ -5,8 +5,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class MainController {
-    @GetMapping("/")
+    @GetMapping("/api/admin/")
     public String allUsers() {
-        return "main";
+        return "mainAdmin";
+    }
+    @GetMapping("/api/authUser/")
+    public String user() {
+        return "mainUser";
     }
 }

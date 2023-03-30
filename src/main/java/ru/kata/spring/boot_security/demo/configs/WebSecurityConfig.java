@@ -32,13 +32,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers( "/login").permitAll()//доступ для всех
-                .antMatchers("/admin/**")
+                .antMatchers("/api/admin/**")
                 .hasRole("ADMIN")
-                .antMatchers("/user/**")
-                .hasAnyRole("ADMIN", "USER")
+                .antMatchers("/api/authUser/**")
+                .hasAnyRole("USER", "ADMIN")
                 .and()//разделитель
-//                можно указать форму для авторизации, по умолчанию спринговая
-//обработчик успешной аутентификации
                 .formLogin()
                 .loginPage("/login")
                 .successHandler(successUserHandler)

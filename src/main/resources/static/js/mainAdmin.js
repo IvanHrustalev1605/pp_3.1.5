@@ -7,7 +7,7 @@ const userFetch = {
 async function title() {
     let authUserEmail = document.querySelector('#auth-email');
     let authUserRoles = document.querySelector('#auth-roles');
-    let res = await fetch("/user");
+    let res = await fetch("/userProfile");
     res.json().then(user => {
         authUserEmail.innerHTML = user.email;
         authUserRoles.innerHTML = user.role.map(x => " " + x.name.substr(5));
@@ -38,7 +38,7 @@ async function getAllUsers() {
                             className data-toggle="modal" data-target="#editModal">Edit</button>
                     </td>
                     <td>
-                        <button type="button" data-userid="${user.id}" data-action="delete" onclick="deleteUserById(this.getAttribute('data-userid'))" id="delete" class="btn btn-danger btn-sm"
+                        <button type="button" data-userid="${user.id}" data-action="delete" onclick="deleteUserById(this.getAttribute('data-userid'))" id="delete" class="btn btn-danger btn-sm" 
                             className data-toggle="modal" data-target="#modalDeleteWindow">Delete</button>
                     </td>
              </tr>`;
@@ -66,26 +66,21 @@ async function getUserById(id) {
                     <td>${user.age}</td>
                     <td>${user.email}</td>
                     <td>${user.role.map(x => " " + x.name.substr(5))}</td>
-             </tr>
-                <button sec:authorize="hasRole('ROLE_ADMIN')"
-                        id="back-to-all-users"
-                        class="btn btn-info"
-                        type="button"
-                        onclick="getAllUsers()"  data-target="#allUsers" data-action="get">Back to all users</button>`;
+             </tr>`;
         table.innerHTML = temp;
     })
 }
 
 var setRoles;
 async function pechenka() {
-      fetch("/roles").then(res => res.json()).then(roles => {
+      fetch("/allUsers/roles").then(res => res.json()).then(roles => {
         setRoles = roles
     });
 }
 
 async function getAllRoles() {
     let roleSelect = document.querySelector('#roles')
-    let setRoles = await fetch("/roles");
+    let setRoles = await fetch("/allUsers/roles");
          await setRoles.json().then(r => {
         r.forEach(role => {
             let option = document.createElement("option");
@@ -106,7 +101,3 @@ $(document).ready(function () {
     title();
     $('#add-form').hide();
 });
-
-function loadModalWindow() {
-    $('#modalDeleteWindow').modal('show');
-}

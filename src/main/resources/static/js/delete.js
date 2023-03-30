@@ -31,7 +31,7 @@ async function deleteUserById(id) {
             </form>`;
     })
     $('#deleteButton').on('click', async function () {
-        let response = await fetch(`/user/${id}`, {
+        let response = await fetch(`allUsers/user/${id}`, {
             head: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
